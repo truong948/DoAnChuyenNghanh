@@ -38,7 +38,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: TrendyFrame   # Tên App Service của bạn
+          app-name: TrendyFrameAvata
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: site.zip
 
