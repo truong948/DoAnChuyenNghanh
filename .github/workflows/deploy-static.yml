@@ -1,0 +1,44 @@
+name: Build & deploy Vite app to Azure App Service
+
+on:
+  push:
+    branches: [ main ]   # chạy khi bạn push code lên nhánh main
+  workflow_dispatch:      # cho phép chạy thủ công từ tab Actions
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Lấy code từ repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Cài Node.js (dùng Node 20 cho Vite/React mới)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3. Cài dependency
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Build project (Vite sẽ build ra thư mục dist/)
+      - name: Build project
+        run: npm run build
+
+      # 5. Nén thư mục dist để deploy
+      - name: Zip build
+        run: |
+          cd dist
+          zip -r ../site.zip *
+
+      # 6. Deploy lên Azure App Service
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: TrendyFrame   # Tên App Service của bạn
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: site.zip
+
